@@ -1,17 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import SignUpPage from "./pages/SignUpPage";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material";
+import Routes from "./routes";
 
 const theme = createTheme();
 
 const RoutedApp = () => (
   <ThemeProvider theme={theme}>
     <BrowserRouter>
-      <Route path="/" component={SignUpPage} />
+      <Routes />
     </BrowserRouter>
   </ThemeProvider>
 );
