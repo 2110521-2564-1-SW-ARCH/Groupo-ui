@@ -9,18 +9,18 @@ import Routes from "./routes";
 const theme = createTheme();
 
 const RoutedApp = () => (
-  <ThemeProvider theme={theme}>
-    <BrowserRouter>
-      <Routes />
-    </BrowserRouter>
-  </ThemeProvider>
+	<ThemeProvider theme={theme}>
+		<BrowserRouter>
+			<Routes />
+		</BrowserRouter>
+	</ThemeProvider>
 );
 
 ReactDOM.render(
-  <React.StrictMode>
-    <RoutedApp />
-  </React.StrictMode>,
-  document.getElementById("root")
+	<React.StrictMode>
+		<RoutedApp />
+	</React.StrictMode>,
+	document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
