@@ -1,24 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import App from "./App";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter } from "react-router-dom";
-import { createTheme, ThemeProvider } from "@mui/material";
-import Routes from "./routes";
 
-const theme = createTheme();
-
-const RoutedApp = () => (
-	<ThemeProvider theme={theme}>
-		<BrowserRouter>
-			<Routes />
-		</BrowserRouter>
-	</ThemeProvider>
-);
 
 ReactDOM.render(
 	<React.StrictMode>
-		<RoutedApp />
+		<App />
 	</React.StrictMode>,
 	document.getElementById("root")
 );
