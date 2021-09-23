@@ -1,9 +1,5 @@
-import Avatar from "@mui/material/Avatar";
-import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
+import { LockOutlined } from "@mui/icons-material";
+import { Avatar, Box, Container, CssBaseline, Typography } from "@mui/material";
 import SignUpForm from "../../components/SignUpForm";
 
 const SignUp = () => {
@@ -19,7 +15,7 @@ const SignUp = () => {
 				}}
 			>
 				<Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-					<LockOutlinedIcon />
+					<LockOutlined />
 				</Avatar>
 				<Typography component="h1" variant="h5">
 					Sign up

@@ -1,5 +1,6 @@
 
 import {
+	Box,
 	Button,
 	Checkbox,
 	FormControlLabel,
@@ -7,7 +8,6 @@ import {
 	Link,
 	TextField
 } from "@mui/material";
-import { Box } from "@mui/system";
 import { useFormik } from "formik";
 import { signupFormConfig } from "../../models/form/signup";
 
