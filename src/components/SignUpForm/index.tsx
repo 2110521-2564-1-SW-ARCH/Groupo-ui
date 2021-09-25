@@ -9,13 +9,14 @@ import {
 	TextField
 } from "@mui/material";
 import { useFormik } from "formik";
+import { signUp } from "../../client/AuthClient";
 import { signupFormConfig } from "../../models/form/signup";
 
 const SignUpForm = () => {
 	const formik = useFormik({
 		...signupFormConfig,
-		onSubmit: values => {
-			alert(JSON.stringify(values, null, 2));
+		onSubmit: async (values) => {
+			await signUp(values)
 		}
 	});
 
