@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Link, TextField } from "@mui/material";
+import { Alert, Box, Button, Grid, Link, TextField } from "@mui/material";
 import { useState } from "react";
 import { useHistory } from "react-router";
 import { login } from "../../client/AuthClient";
@@ -6,6 +6,7 @@ import { login } from "../../client/AuthClient";
 const LoginForm = () => {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
+    const [loginError, setLoginError] = useState<boolean>(false)
     const history = useHistory();
 
     return (
@@ -13,11 +14,18 @@ const LoginForm = () => {
             sx={{ mt: 3 }}
             onSubmit={async (e: any) => {
                 e.preventDefault();
-                const responseCode = await login(email, password);
-                if(responseCode === 200) history.push("/")
+                try {
+                    await login({ email, password });
+                    history.push("/");
+                } catch (error) {
+                    setLoginError(true);
+                }
             }}
         >
             <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    {loginError && <Alert severity="error">Email or password is incorrect.</Alert>}
+                </Grid>
                 <Grid item xs={12}>
                     <TextField
                         id="email"

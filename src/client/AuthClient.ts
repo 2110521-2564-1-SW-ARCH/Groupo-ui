@@ -1,24 +1,20 @@
 import axios from "axios"
-import { UserServiceHostPrefix } from "."
+import { userServiceHostPrefix } from "."
+import { LoginRequest, RegisterRequest } from "groupo-shared-service/apiutils/messages"
 
-export const signUp = async (params: {
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string,
-    agreement: boolean,
-}) => {
-    return await axios.post(UserServiceHostPrefix('/user/register'), { params })
+export const signUp = async (params: RegisterRequest) => {
+    await axios.post(userServiceHostPrefix('/user/register'), params);
+    await login({ email: params.email, password: params.password });
 }
 
-export const login = async (email: string, password: string) => {
-    const { data } = await axios.post(UserServiceHostPrefix('/user/login'), { email, password })
-    if(data.status === 200) {
+export const login = async (params: LoginRequest) => {
+    const { data } = await axios.post(userServiceHostPrefix('/user/login'), params)
+    if (data.status === 200) {
         localStorage.setItem("user", JSON.stringify(data.body));
     }
-    return data.status;
 }
 
 export const logout = async () => {
+    // await axios.post(userServiceHostPrefix('/user/logout))
     localStorage.removeItem("user");
 }

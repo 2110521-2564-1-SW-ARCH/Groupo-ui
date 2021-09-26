@@ -6,7 +6,6 @@ export const signupFormConfig = {
         lastName: "",
         email: "",
         password: "",
-        agreement: false
     },
     validationSchema: yup.object({
         firstName: yup.string().required("First name is required"),

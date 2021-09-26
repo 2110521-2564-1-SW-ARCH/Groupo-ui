@@ -9,10 +9,13 @@ import {
 	TextField
 } from "@mui/material";
 import { useFormik } from "formik";
+import { useState } from "react";
 import { signUp } from "../../client/AuthClient";
 import { signupFormConfig } from "../../models/form/signup";
 
 const SignUpForm = () => {
+	const [agreement, setAgreement] = useState<boolean>(false);
+
 	const formik = useFormik({
 		...signupFormConfig,
 		onSubmit: async (values) => {
@@ -83,8 +86,8 @@ const SignUpForm = () => {
 							<Checkbox
 								color="primary"
 								name="agreement"
-								value={formik.values.agreement}
-								onChange={formik.handleChange}
+								value={agreement}
+								onChange={() => setAgreement(!agreement)}
 							/>
 						}
 						label="I agree to the terms and services."
@@ -92,7 +95,7 @@ const SignUpForm = () => {
 				</Grid>
 			</Grid>
 			<Button
-				disabled={formik.isSubmitting || !formik.values.agreement}
+				disabled={formik.isSubmitting || !agreement}
 				type="submit"
 				fullWidth
 				variant="contained"
