@@ -12,6 +12,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
+import { logout } from "../../client/AuthClient";
 
 const Nav = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -57,7 +58,10 @@ const Nav = () => {
       <MenuItem component={Link} to="/profile" onClick={handleMenuClose}>
         Profile
       </MenuItem>
-      <MenuItem component={Link} to="/login" onClick={handleMenuClose}>
+      <MenuItem component={Link} to="/login" onClick={() => {
+        logout();
+        handleMenuClose();
+      }}>
         Log out
       </MenuItem>
     </Menu>

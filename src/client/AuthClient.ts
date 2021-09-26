@@ -12,9 +12,13 @@ export const signUp = async (params: {
 }
 
 export const login = async (email: string, password: string) => {
-    return await axios.post(UserServiceHostPrefix('/user/register'), { email, password })
+    const { data } = await axios.post(UserServiceHostPrefix('/user/login'), { email, password })
+    if(data.status === 200) {
+        localStorage.setItem("user", JSON.stringify(data.body));
+    }
+    return data.status;
 }
 
 export const logout = async () => {
-
+    localStorage.removeItem("user");
 }
