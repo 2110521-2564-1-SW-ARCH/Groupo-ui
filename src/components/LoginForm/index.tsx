@@ -1,16 +1,21 @@
 import { Box, Button, Grid, Link, TextField } from "@mui/material";
 import { useState } from "react";
+import { useHistory } from "react-router";
+import { login } from "../../client/AuthClient";
 
 const LoginForm = () => {
-    const [email, setEmail] = useState<string>()
-    const [password, setPassword] = useState<string>()
+    const [email, setEmail] = useState<string>("")
+    const [password, setPassword] = useState<string>("")
+    const history = useHistory();
 
     return (
         <Box component="form"
             sx={{ mt: 3 }}
-            onSubmit={(e: any) => {
+            onSubmit={async (e: any) => {
                 e.preventDefault();
-            }} 
+                const responseCode = await login(email, password);
+                if(responseCode === 200) history.push("/")
+            }}
         >
             <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -36,20 +41,20 @@ const LoginForm = () => {
                 </Grid>
             </Grid>
             <Button
-				type="submit"
-				fullWidth
-				variant="contained"
-				sx={{ mt: 3, mb: 2 }}
-			>
-				Log in
-			</Button>
-			<Grid container justifyContent="flex-end">
-				<Grid item>
-					<Link href="/" variant="body2">
-						Don't have an account? Sign up
-					</Link>
-				</Grid>
-			</Grid>
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+            >
+                Log in
+            </Button>
+            <Grid container justifyContent="flex-end">
+                <Grid item>
+                    <Link href="/signup" variant="body2">
+                        Don't have an account? Sign up
+                    </Link>
+                </Grid>
+            </Grid>
         </Box>
     )
 };
