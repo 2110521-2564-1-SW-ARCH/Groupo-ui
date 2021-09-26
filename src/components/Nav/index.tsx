@@ -80,7 +80,9 @@ const Nav = () => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>Join</MenuItem>
+      <MenuItem component={Link} to="/join">
+        Join
+      </MenuItem>
       <MenuItem component={Link} to="/create">
         Create
       </MenuItem>
@@ -116,7 +118,9 @@ const Nav = () => {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <Button color="inherit">Join</Button>
+            <Button component={Link} to="/join" color="inherit">
+              Join
+            </Button>
             <Button component={Link} to="/create" color="inherit">
               Create
             </Button>
