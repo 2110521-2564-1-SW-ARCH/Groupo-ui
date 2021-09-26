@@ -14,13 +14,13 @@ const Routes = () => {
       <Route exact path="/signup" component={SignUp} />
       <Route exact path="/login" component={Login} />
       <NavRoute exact path="/profile" component={() => (
-        <RequireAuth component={ProfilePage} />
+        <RequireAuth Component={ProfilePage} />
       )} />
       <NavRoute exact path="/create" component={() => (
-        <RequireAuth component={CreateBoardPage} />
+        <RequireAuth Component={CreateBoardPage} />
       )} />
       <NavRoute exact path="/join" component={() => (
-        <RequireAuth component={JoinPage} />
+        <RequireAuth Component={JoinPage} />
       )} />
       <NavRoute exact path="/" component={() => (
         <RequireAuth Component={BoardListPage} />
