@@ -4,21 +4,6 @@ import { useEffect, useState } from "react";
 import { getBoards } from "../../client/GroupingClient";
 import BoardListItem from "../BoardListItem";
 
-const MOCKING = [
-  {
-    title: "SE2",
-    totalGroups: 14,
-    totalMembers: 120,
-    isGrouped: true,
-  },
-  {
-    title: "Software Architecture",
-    totalGroups: 7,
-    totalMembers: 40,
-    isGrouped: false,
-  },
-];
-
 const BoardList = () => {
   const [boards, setBoards] = useState<Array<BoardResponse>>([])
 
@@ -39,7 +24,7 @@ const BoardList = () => {
               title={board.name}
               totalGroups={board.totalGroup}
               totalMembers={board.totalMember}
-              isGrouped={board.isAssign}
+              isAssign={board.isAssign}
             />
           ))}
         </Box>

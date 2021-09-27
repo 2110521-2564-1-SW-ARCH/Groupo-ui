@@ -4,26 +4,20 @@ import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import { Link } from "react-router-dom";
 
 import "./style.css";
-
-type Props = {
-  title: string;
-  totalGroups: number;
-  totalMembers: number;
-  isGrouped: boolean;
-};
+import { BoardItem } from "../../models/type/board";
 
 const BoardListItem = ({
   title,
   totalGroups,
   totalMembers,
-  isGrouped,
-}: Props) => {
+  isAssign,
+}: BoardItem) => {
   return (
     <Box p={1} borderRadius={2} border="1px solid #00000020">
       <Box
         style={{
           borderLeft: "4px solid",
-          borderLeftColor: isGrouped ? "#039BE5" : "#E53935",
+          borderLeftColor: isAssign ? "#039BE5" : "#E53935",
         }}
         pl={1}
         display="flex"

@@ -16,3 +16,7 @@ export const logout = async () => {
     // await axios.post(userServiceHostPrefix('/user/logout))
     localStorage.removeItem("user");
 }
+
+export const getProfile = async () => {
+    
+}

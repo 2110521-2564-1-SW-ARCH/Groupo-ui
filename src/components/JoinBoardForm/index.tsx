@@ -12,20 +12,11 @@ import {
   Typography,
 } from "@mui/material";
 import { FormEvent, useState } from "react";
-import _ from "lodash";
 import GroupsIcon from "@mui/icons-material/Groups";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import { Search as SearchIcon } from "@mui/icons-material";
 import { BoardResult } from "../../models/type/board";
-
-const MOCK = {
-  title: "Sofware Architecture",
-  totalGroups: 7,
-  totalMembers: 40,
-  creator: "Duangdao W.",
-  tag: "Skills",
-  choices: ["Frontend", "Backend"],
-};
+import { mockJoinBoardResult } from "../test/data/board";
 
 const JoinBoardForm = () => {
   const [searchKey, setSearchKey] = useState("");
@@ -34,7 +25,7 @@ const JoinBoardForm = () => {
 
   const handleOnSearch = (e: FormEvent) => {
     e.preventDefault();
-    setBoardResult(MOCK);
+    setBoardResult(mockJoinBoardResult);
   };
 
   return (
