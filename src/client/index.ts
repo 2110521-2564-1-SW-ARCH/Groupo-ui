@@ -9,6 +9,7 @@ export const checkToken = async () => {
         const { data } = await axios.post(userServiceHostPrefix('/user/refresh'), params)
         localStorage.setItem("user", JSON.stringify(data.body));
     }
+    return JSON.parse(localStorage.getItem("user")!).accessToken
 }
 
 export const userServiceHostPrefix = (url: string) => {
