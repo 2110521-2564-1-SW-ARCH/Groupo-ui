@@ -1,4 +1,5 @@
 import axios from "axios"
+import { CreateBoardRequest } from "groupo-shared-service/apiutils/messages"
 import { getTokenHeader, groupingServiceHostPrefix } from "."
 
 export const getBoards = async () => {
@@ -11,8 +12,10 @@ export const getBoard = () => {
 
 }
 
-export const createBoard = async () => {
-    
+export const createBoard = async (params: CreateBoardRequest) => {
+    const header = await getTokenHeader()
+    await axios.post(groupingServiceHostPrefix('/board'), params, header)
+    // console.log(data.body.boardID)
 }
 
 export const updateBoard = () => {
