@@ -1,13 +1,9 @@
 import axios from "axios"
-import { checkToken, groupingServiceHostPrefix } from "."
+import { getTokenHeader, groupingServiceHostPrefix } from "."
 
 export const getBoards = async () => {
-    const token = await checkToken()
-    const { data } = await axios.get(groupingServiceHostPrefix('/board'), {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
+    const header = await getTokenHeader()
+    const { data } = await axios.get(groupingServiceHostPrefix('/board'), header)
     return data.body
 }
 
@@ -15,8 +11,8 @@ export const getBoard = () => {
 
 }
 
-export const createBoard = () => {
-
+export const createBoard = async () => {
+    
 }
 
 export const updateBoard = () => {

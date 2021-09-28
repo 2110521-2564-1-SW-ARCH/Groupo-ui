@@ -1,7 +1,7 @@
 import axios from "axios";
 import { RefreshRequest } from "groupo-shared-service/apiutils/messages";
 
-export const checkToken = async () => {
+export const getTokenHeader = async () => {
     const currentToken = JSON.parse(localStorage.getItem("user")!);
     const accessTokenInformation = JSON.parse(atob(currentToken.accessToken.split(".")[1]));
     if (accessTokenInformation.exp * 1000 < Date.now()) {
@@ -9,7 +9,12 @@ export const checkToken = async () => {
         const { data } = await axios.post(userServiceHostPrefix('/user/refresh'), params)
         localStorage.setItem("user", JSON.stringify(data.body));
     }
-    return JSON.parse(localStorage.getItem("user")!).accessToken
+    const token = JSON.parse(localStorage.getItem("user")!).accessToken
+    return {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }
 }
 
 export const userServiceHostPrefix = (url: string) => {

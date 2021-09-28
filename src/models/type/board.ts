@@ -8,6 +8,7 @@ export type BoardResult = {
 }
 
 export type BoardItem = {
+	boardID: string;
 	title: string;
 	totalGroups: number;
 	totalMembers: number;
