@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Box,
 	Button,
 	Container,
@@ -33,7 +34,7 @@ const CreateBoardForm = () => {
 				await createBoard(boardForm);
 				history.push("/");
 			} catch (error) {
-
+				console.log(error)
 			}
 		},
 	});
@@ -123,6 +124,9 @@ const CreateBoardForm = () => {
 				>
 					Add choice for this tag
 				</Button>
+				<Grid item xs={12}>
+                    {formik.touched.choices && Boolean(formik.errors.choices) && <Alert severity="error">{formik.touched.choices && formik.errors.choices}</Alert>}
+                </Grid>
 				<Button
 					type="submit"
 					fullWidth
