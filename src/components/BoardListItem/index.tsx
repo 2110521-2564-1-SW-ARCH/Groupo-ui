@@ -20,16 +20,16 @@ const BoardListItem = ({board}: {board: BoardItem}) => {
         gap={0.5}
       >
         <Link to="/" className="title">
-          <Typography variant="h5">{board.title}</Typography>
+          <Typography variant="h5">{board.name}</Typography>
         </Link>
         <Grid container spacing={1}>
           <Grid item xs={4} display="flex" gap={1} color="gray" fontSize="10px">
             <GroupsIcon />
-            <Typography>{board.totalGroups} groups</Typography>
+            <Typography>{board.totalGroup} groups</Typography>
           </Grid>
           <Grid item xs={4} display="flex" gap={1} color="gray" fontSize="10px">
             <PermIdentityIcon />
-            <Typography>{board.totalMembers} joined</Typography>
+            <Typography>{board.totalMember} joined</Typography>
           </Grid>
         </Grid>
       </Box>

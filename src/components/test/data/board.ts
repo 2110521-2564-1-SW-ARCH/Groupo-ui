@@ -1,23 +1,23 @@
 export const mockBoardList = [
     {
-        title: "SE2",
-        totalGroups: 14,
-        totalMembers: 120,
+        name: "SE2",
+        totalGroup: 14,
+        totalMember: 120,
         isGrouped: true,
     },
     {
-        title: "Software Architecture",
-        totalGroups: 7,
-        totalMembers: 40,
+        name: "Software Architecture",
+        totalGroup: 7,
+        totalMember: 40,
         isGrouped: false,
     },
 ];
 
 export const mockJoinBoardResult = {
-    title: "Sofware Architecture",
-    totalGroups: 7,
-    totalMembers: 40,
-    creator: "Duangdao W.",
+    name: "Sofware Architecture",
+    totalGroup: 7,
+    totalMember: 40,
+    owner: "Duangdao W.",
     tag: "Skills",
     choices: ["Frontend", "Backend"],
 };

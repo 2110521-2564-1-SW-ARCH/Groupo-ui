@@ -1,16 +1,17 @@
 export type BoardResult = {
-	title: string
-	totalGroups: number
-	totalMembers: number
-	creator: string
-	tag: string
-	choices: string[]
+	name: string
+	totalGroup: number
+	totalMember: number
+	owner: string
+	isAssign: boolean
+	// tag: string
+	// choices: string[]
 }
 
 export type BoardItem = {
 	boardID: string;
-	title: string;
-	totalGroups: number;
-	totalMembers: number;
+	name: string;
+	totalGroup: number;
+	totalMember: number;
 	isAssign: boolean;
 }

@@ -8,8 +8,10 @@ export const getBoards = async () => {
     return data.body
 }
 
-export const getBoard = () => {
-
+export const getBoard = async (boardID: string) => {
+    const header = await getTokenHeader()
+    const { data } = await axios.get(groupingServiceHostPrefix(`/board/${boardID}`), header)
+    return data.body
 }
 
 export const createBoard = async (params: CreateBoardRequest) => {

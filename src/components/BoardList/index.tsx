@@ -14,9 +14,9 @@ const BoardList = () => {
 			const boards: Array<BoardItem> = res.map((board: BoardResponse) => {
 				return {
 					boardID: board.boardID,
-					title: board.name,
-					totalGroups: board.totalGroup,
-					totalMembers: board.totalMember,
+					name: board.name,
+					totalGroup: board.totalGroup,
+					totalMember: board.totalMember,
 					isAssign: board.isAssign,
 				}
 			})
