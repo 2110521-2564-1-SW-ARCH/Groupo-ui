@@ -17,6 +17,8 @@ export const logout = async () => {
     localStorage.removeItem("user");
 }
 
-export const getProfile = async () => {
-    
+export const getProfile = () => {
+    const currentToken = JSON.parse(localStorage.getItem("user")!);
+    const accessTokenInformation = JSON.parse(atob(currentToken.accessToken.split(".")[1]));
+    return accessTokenInformation.email
 }

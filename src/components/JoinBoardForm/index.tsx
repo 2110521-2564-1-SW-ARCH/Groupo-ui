@@ -16,11 +16,15 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import { Search as SearchIcon } from "@mui/icons-material";
 import { BoardResult } from "../../models/type/board";
-import { getBoard } from "../../client/GroupingClient";
+import { getBoard, joinBoard } from "../../client/GroupingClient";
+import { getProfile } from "../../client/AuthClient";
+import { useHistory } from "react-router-dom";
 
 const JoinBoardForm = () => {
 	const [searchKey, setSearchKey] = useState<string>("");
 	const [boardResult, setBoardResult] = useState<BoardResult>();
+	const profile = getProfile();
+	const history = useHistory();
 	// const [selectedChoice, setSelectedChoice] = useState("");
 
 	const handleOnSearch = async (e: FormEvent) => {
@@ -28,6 +32,16 @@ const JoinBoardForm = () => {
 		const res = await getBoard(searchKey);
 		setBoardResult(res);
 	};
+
+	const handleJoinBoard = async () => {
+		try {
+			console.log(boardResult)
+			await joinBoard(boardResult!.boardID)
+			history.push("/");
+		} catch (error) {
+			console.log(error)
+		}
+	}
 
 	return (
 		<Container component="main" maxWidth="xs">
@@ -112,7 +126,7 @@ const JoinBoardForm = () => {
 							))}
 						</Select>
 					</FormControl> */}
-					{boardResult.isAssign && <Button variant="contained" >Join</Button>}
+					{!boardResult.members.includes(profile) && <Button variant="contained" onClick={handleJoinBoard}>Join</Button>}
 				</Box>
 			)}
 		</Container>
