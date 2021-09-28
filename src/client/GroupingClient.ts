@@ -1,7 +1,6 @@
 import axios from "axios"
-import { CreateBoardRequest, BoardInvitationRequest } from "groupo-shared-service/apiutils/messages"
+import { CreateBoardRequest } from "groupo-shared-service/apiutils/messages"
 import { getTokenHeader, groupingServiceHostPrefix } from "."
-import { getProfile } from "./AuthClient"
 
 export const getBoards = async () => {
     const header = await getTokenHeader()

@@ -10,16 +10,23 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { signUp } from "../../client/AuthClient";
 import { signupFormConfig } from "../../models/form/signup";
 
 const SignUpForm = () => {
 	const [agreement, setAgreement] = useState<boolean>(false);
+	const history = useHistory();
 
 	const formik = useFormik({
 		...signupFormConfig,
 		onSubmit: async (values) => {
-			await signUp(values)
+			try {
+				await signUp(values);
+				history.push("/");
+			} catch (error) {
+				console.log(error);
+			}
 		}
 	});
 
