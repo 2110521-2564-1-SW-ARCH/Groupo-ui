@@ -24,29 +24,16 @@ const MOCK = {
 const GroupPage = () => {
   const { id: groupId } = useParams<{ id?: string }>();
   const [groupInfo, setGroupInfo] = useState<BoardResult>();
-  // const [groupInfoList, setGroupInfoList] = useState<Array<BoardItem>>([]);
 
   useEffect(() => {
     (async () => {
       //TODO: fetch the group info for the given groupId, keep it in groupInfo
-      const gID:string = '7049fc8d-d67d-45fc-a34b-35e55c0203ff';
+      // const gID:string = '7049fc8d-d67d-45fc-a34b-35e55c0203ff';
       const gid:string = groupId!;
       const res = await getBoard(gid);
-      const board = {
-        boardID: res.boardID,
-        name: res.name,
-        totalGroup: res.totalGroup,
-        totalMember: res.totalMember,
-        owner: res.owner,
-        isAssign: res.isAssign,
-        members: res.members,
-      }
-      const fetchedGroupInfo = board;
-      setGroupInfo(fetchedGroupInfo);
-      
-      console.log("res =",res);
-      console.log("board =", board);
-      // setGroupInfo(board);
+  
+      // console.log("res =",res);
+      setGroupInfo(res);
     })();
     console.log("groupID =", groupId);
     console.log("groupInfo =",groupInfo);
@@ -55,7 +42,7 @@ const GroupPage = () => {
   return (
     <div className="board-container">
       <h1>{groupInfo?.name}</h1>
-      <GroupBoard />
+      <GroupBoard column={groupInfo} />
     </div>
   );
 };
