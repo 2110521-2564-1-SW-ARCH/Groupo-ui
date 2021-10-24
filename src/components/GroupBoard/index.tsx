@@ -5,24 +5,19 @@ import {
   Droppable,
   DropResult,
 } from "react-beautiful-dnd";
-import socketIOClient from "socket.io-client";
+import socketIOClient, { Socket } from "socket.io-client";
 import socket from "socket.io";
 import { getTokenHeader, groupingServiceHostPrefix } from "../../client/index"
 import { BoardResult } from "../../models/type/board";
 import { getBoards,getBoard } from "../../client/GroupingClient";
 import { getProfile } from "../../client/AuthClient";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 type Column = 
   { groupID: string, 
-    members: Array<member>,
+    members: Array<string>,
     name: string
   }
-
-type member = {
-  email : string,
-  boardID: string,
-  groupID: string
-}
 
 const itemsFromBackend = [
   { id: 1, email: "a@gmail.com", content: "Sornram 1" },
@@ -93,18 +88,23 @@ const columnsFromBackend = {
   }
 };
 
-const onDragEnd = (result: DropResult, columns: any, setColumns: any, boardID: string|undefined) => {
+const onDragEnd = (result: DropResult, columns: any, setColumns: any, boardID: string|undefined, socket:Socket<DefaultEventsMap, DefaultEventsMap>) => {
   if (!result.destination) return;
   const { source, destination } = result;
-  console.log("result =",result);
-  console.log("column =",columns);
-  console.log("source =",source," destination =",destination);
+  // console.log("result =",result);
+  // console.log("column =",columns);
+  // console.log("source =",source," destination =",destination);
 
   if (source.droppableId !== destination.droppableId) {
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
     const sourceItems = [...sourceColumn.members];
     const destItems = [...destColumn.members];
+
+    //send socket destination 
+    console.log("destColumn =",destColumn.groupID);
+    socketSend(socket,boardID,destColumn.groupID);
+
     const [removed] = sourceItems.splice(source.index, 1);
     destItems.splice(destination.index, 0, removed);
     setColumns({
@@ -118,7 +118,6 @@ const onDragEnd = (result: DropResult, columns: any, setColumns: any, boardID: s
         members: destItems,
       },
     });
-
     // TODO: send an event to the server regarding the change in group
   } else {
     const column = columns[source.droppableId];
@@ -139,18 +138,8 @@ const onDragEnd = (result: DropResult, columns: any, setColumns: any, boardID: s
 //   return Object.assign({},groupsArray);
 // }
 
-const socketConnect = async (boardID: string|undefined, destinationGroup:string) => {
-  const header = await getTokenHeader()
-  console.log("header =",header);
-
-  //const bdid = "560c9bb3-2e71-48ec-a285-4a539e60602b"
-  const socket = socketIOClient("http://localhost:8081/?boardID="+boardID+"&token="+header.headers["Authorization"]);
+const socketSend = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>,boardID: string|undefined, destinationGroup:string) => {
   
-  socket.on("transit",(email,groupID) => {
-    console.log("email =",email," groupID =",groupID);
-  });
-
-  //const gid = "11b0205b-48da-455d-81d1-9ed0d64f7c92"
   socket.emit("transit", destinationGroup);
 }
 
@@ -165,7 +154,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
   const [boardID, setBoardID] = useState<string | undefined>(); 
   const [userInfo, setUserInfo] = useState<string | undefined>();
   const [columns, setColumns] = useState<Column[]>([]);
-
+  const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
   // const fetchedColumns = props.props.groups;
 
   // useEffect(() => {
@@ -180,6 +169,27 @@ function GroupBoard({bid}:{bid:string | undefined}) {
   //   // start socket connection
   //   // socketConnect("hello");
   // }, [column]);
+  useEffect(() =>{
+    (async () => {
+      const header = await getTokenHeader()
+      console.log("header =",header);
+
+      //const bdid = "560c9bb3-2e71-48ec-a285-4a539e60602b"
+      const sock = socketIOClient("http://localhost:8081/?boardID="+bid+"&token="+header.headers["Authorization"]);
+      
+      sock.on("transit",(email,groupID) => {
+        console.log("email =",email," groupID =",groupID);
+      });
+
+      sock.on("join",(email,groupID) => {
+        console.log("email =",email);
+      });
+
+      setSocket(sock);
+
+    })();
+  },[])
+
   useEffect(() => {
     (async () => {
       //TODO: fetch the group info for the given groupId, keep it in groupInfo
@@ -191,14 +201,13 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       setColumns(res.groups);
       setBoardID(res.boardID);
 
-      const user = await getProfile();
+      const user = getProfile();
       console.log("user =",user);
       setUserInfo(user);
     })();
     console.log("groupboard groupID =", bid);
     console.log("groupInfo =",groupInfo);
-
-    socketConnect(boardID,"11b0205b-48da-455d-81d1-9ed0d64f7c92");
+    // socketReceive(boardID);
   }, [bid]);
   return (
     <div
@@ -211,7 +220,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       }}
     >
       <DragDropContext
-        onDragEnd={(result) => onDragEnd(result, columns, setColumns, boardID)}
+        onDragEnd={(result) => socket && onDragEnd(result, columns, setColumns, boardID, socket)}
       >
         {Object.entries(columns).map(([columnId, column], index) => {
           // console.log("column =",column);
@@ -245,13 +254,13 @@ function GroupBoard({bid}:{bid:string | undefined}) {
                         {column.members.map((item, index) => {
                           return (
                             <Draggable
-                              key={item.email}
-                              draggableId={`${item.email}`}
+                              key={item}
+                              draggableId={`${item}`}
                               index={index}
                               isDragDisabled={
                                 // TODO: check if we have right to change group for this person
                                 // ex. item.id !== owner.id
-                                checkDragDisable(userInfo,item.email)
+                                checkDragDisable(userInfo,item)
                                 // false
                               }
                             >
@@ -273,7 +282,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
                                       ...provided.draggableProps.style,
                                     }}
                                   >
-                                    {item.email}
+                                    {item}
                                   </div>
                                 );
                               }}

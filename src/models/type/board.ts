@@ -1,14 +1,7 @@
-export type BoardResult = {
-	boardID: string
-	name: string
-	totalGroup: number
-	totalMember: number
-	owner: string
-	isAssign: boolean
-	members: string[]
-	// tag: string
-	// choices: string[]
-}
+import { BoardResponse } from "groupo-shared-service/apiutils/messages"
+
+
+export type BoardResult = BoardResponse
 
 export type BoardItem = {
 	boardID: string;
