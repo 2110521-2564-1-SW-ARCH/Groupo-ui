@@ -32,7 +32,7 @@ const GroupPage = () => {
       const gid:string = groupId!;
       const res = await getBoard(gid);
   
-      // console.log("res =",res);
+      console.log("res =",res);
       setGroupInfo(res);
     })();
     console.log("groupID =", groupId);
@@ -42,7 +42,7 @@ const GroupPage = () => {
   return (
     <div className="board-container">
       <h1>{groupInfo?.name}</h1>
-      <GroupBoard column={groupInfo} />
+      <GroupBoard bid={groupId!} />
     </div>
   );
 };

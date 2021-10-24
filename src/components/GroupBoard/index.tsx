@@ -8,6 +8,9 @@ import {
 import socketIOClient from "socket.io-client";
 import socket from "socket.io";
 import { getTokenHeader, groupingServiceHostPrefix } from "../../client/index"
+import { BoardResult } from "../../models/type/board";
+import { getBoards,getBoard } from "../../client/GroupingClient";
+import { getProfile } from "../../client/AuthClient";
 
 type Column = 
   { groupID: string, 
@@ -90,7 +93,7 @@ const columnsFromBackend = {
   }
 };
 
-const onDragEnd = (result: DropResult, columns: any, setColumns: any) => {
+const onDragEnd = (result: DropResult, columns: any, setColumns: any, boardID: string|undefined) => {
   if (!result.destination) return;
   const { source, destination } = result;
   console.log("result =",result);
@@ -136,40 +139,67 @@ const onDragEnd = (result: DropResult, columns: any, setColumns: any) => {
 //   return Object.assign({},groupsArray);
 // }
 
-const socketConnect = async (message: any) => {
+const socketConnect = async (boardID: string|undefined, destinationGroup:string) => {
   const header = await getTokenHeader()
   console.log("header =",header);
 
-  console.log("header =",header)
-  const socket = socketIOClient("http://localhost:8081/?boardID=560c9bb3-2e71-48ec-a285-4a539e60602b&token="+header.headers["Authorization"]);
+  //const bdid = "560c9bb3-2e71-48ec-a285-4a539e60602b"
+  const socket = socketIOClient("http://localhost:8081/?boardID="+boardID+"&token="+header.headers["Authorization"]);
   
   socket.on("transit",(email,groupID) => {
     console.log("email =",email," groupID =",groupID);
   });
 
-  socket.emit("transit", "11b0205b-48da-455d-81d1-9ed0d64f7c92");
+  //const gid = "11b0205b-48da-455d-81d1-9ed0d64f7c92"
+  socket.emit("transit", destinationGroup);
 }
 
-function GroupBoard(column:any) {
-  // const [columns, setColumns] = useState(columnsFromBackend);
-  console.log("props =",column);
+const checkDragDisable = (user:string | undefined, checkEmail:string) => {
+  if (user == checkEmail) {return false;}
+  else {return true;}
+}
 
-  const [columns, setColumns] = useState<Column[]>();
+function GroupBoard({bid}:{bid:string | undefined}) {
+  // const [columns, setColumns] = useState(columnsFromBackend);
+  const [groupInfo, setGroupInfo] = useState();
+  const [boardID, setBoardID] = useState<string | undefined>(); 
+  const [userInfo, setUserInfo] = useState<string | undefined>();
+  const [columns, setColumns] = useState<Column[]>([]);
 
   // const fetchedColumns = props.props.groups;
 
+  // useEffect(() => {
+  //   // TODO: fetch the initial (at start) board state, keep it in columns
+
+  //   //const fetchedColumns = groupsArrayMock;
+  //   // const fetchedColumns = props.props.groups;
+  //   // console.log("fetchedColumns =",fetchedColumns);
+  //   console.log('columns', column)
+  //   setColumns(column);
+
+  //   // start socket connection
+  //   // socketConnect("hello");
+  // }, [column]);
   useEffect(() => {
-    // TODO: fetch the initial (at start) board state, keep it in columns
+    (async () => {
+      //TODO: fetch the group info for the given groupId, keep it in groupInfo
+      // const gID:string = '7049fc8d-d67d-45fc-a34b-35e55c0203ff';
+      const gid:string = bid!;
+      const res = await getBoard(gid);
+      console.log("group board =",res);
+      setGroupInfo(res);
+      setColumns(res.groups);
+      setBoardID(res.boardID);
 
-    //const fetchedColumns = groupsArrayMock;
-    // const fetchedColumns = props.props.groups;
-    // console.log("fetchedColumns =",fetchedColumns);
+      const user = await getProfile();
+      console.log("user =",user);
+      setUserInfo(user);
+    })();
+    console.log("groupboard groupID =", bid);
+    console.log("groupInfo =",groupInfo);
 
-    setColumns(column);
-
-    // start socket connection
-    // socketConnect("hello");
-  }, [column]);
+    socketConnect(boardID,"11b0205b-48da-455d-81d1-9ed0d64f7c92");
+  }, [bid]);
   return (
     <div
       style={{
@@ -181,12 +211,10 @@ function GroupBoard(column:any) {
       }}
     >
       <DragDropContext
-        onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+        onDragEnd={(result) => onDragEnd(result, columns, setColumns, boardID)}
       >
-        {Object.entries(columns || []).map(([columnId, column], index) => {
-          console.log("columns =",columns);
-          console.log("column id =", columnId);
-          console.log("column =", column);
+        {Object.entries(columns).map(([columnId, column], index) => {
+          // console.log("column =",column);
           return (
             <div
               style={{
@@ -195,6 +223,7 @@ function GroupBoard(column:any) {
                 alignItems: "center",
               }}
               key={columnId}
+              // key={columnId}
             >
               <h2>{column.name}</h2>
               <div style={{ margin: 8 }}>
@@ -222,7 +251,8 @@ function GroupBoard(column:any) {
                               isDragDisabled={
                                 // TODO: check if we have right to change group for this person
                                 // ex. item.id !== owner.id
-                                false
+                                checkDragDisable(userInfo,item.email)
+                                // false
                               }
                             >
                               {(provided, snapshot) => {
