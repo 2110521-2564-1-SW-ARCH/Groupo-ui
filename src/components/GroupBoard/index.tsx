@@ -27,28 +27,10 @@ const itemsFromBackend = [
   { id: 5, email: "e@gmail.com", content: "Sornram 5" },
 ];
 
-const groupsArrayMock = [
-  { groupID: "1", 
-    members: [
-      { email: "a@gmail.com",
-        boardID: "",
-        groupID: "1"
-      },
-      { email: "b@gmail.com",
-        boardID: "",
-        groupID: "1"
-      }
-    ],
-    name: "group1"
-  },
-  { groupID: "2", 
-    members: [
-      { email: "c@gmail.com",
-        boardID: "",
-        groupID: "2"
-      }
-    ],
-    name: "group2"
+const noGroup = [
+  { groupID: undefined, 
+    members: [],
+    name: "no group"
   },
 ]
 
@@ -88,10 +70,11 @@ const columnsFromBackend = {
   }
 };
 
-const onDragEnd = (result: DropResult, columns: any, setColumns: any, boardID: string|undefined, socket:Socket<DefaultEventsMap, DefaultEventsMap>) => {
+const onDragEnd = (result: DropResult, columns: any, setColumns: any, socketResponse: boolean, socket:Socket<DefaultEventsMap, DefaultEventsMap>) => {
   if (!result.destination) return;
   const { source, destination } = result;
-  // console.log("result =",result);
+  
+  console.log("result =",result);
   // console.log("column =",columns);
   // console.log("source =",source," destination =",destination);
 
@@ -102,9 +85,11 @@ const onDragEnd = (result: DropResult, columns: any, setColumns: any, boardID: s
     const destItems = [...destColumn.members];
 
     //send socket destination 
-    console.log("destColumn =",destColumn.groupID);
-    socketSend(socket,boardID,destColumn.groupID);
-
+    if (!socketResponse){
+      console.log("destColumn =",destColumn.groupID);
+      socketSend(socket, destColumn.groupID);
+    }
+    
     const [removed] = sourceItems.splice(source.index, 1);
     destItems.splice(destination.index, 0, removed);
     setColumns({
@@ -134,13 +119,25 @@ const onDragEnd = (result: DropResult, columns: any, setColumns: any, boardID: s
   }
 };
 
-// const renderColumn = ( groupsArray : any) => {
-//   return Object.assign({},groupsArray);
-// }
-
-const socketSend = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>,boardID: string|undefined, destinationGroup:string) => {
-  
+const socketSend = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, destinationGroup:string) => {
+  console.log("destination group =",destinationGroup)
   socket.emit("transit", destinationGroup);
+}
+
+const renderDropResult = (email:string, destGroupID:string, columns:Array<Column>) => {
+  const src = columns.map(item => item.groupID).indexOf(destGroupID);
+
+  console.log("source =",src);
+
+  const result ={
+    combine: null,
+    destination: {droppableId: '1', index: 0},
+    draggableId: email,
+    mode: "FLUID",
+    reason: "DROP",
+    source: {index: 1, droppableId: '1'},
+    type: "DEFAULT",
+  }
 }
 
 const checkDragDisable = (user:string | undefined, checkEmail:string) => {
@@ -151,34 +148,24 @@ const checkDragDisable = (user:string | undefined, checkEmail:string) => {
 function GroupBoard({bid}:{bid:string | undefined}) {
   // const [columns, setColumns] = useState(columnsFromBackend);
   const [groupInfo, setGroupInfo] = useState();
-  const [boardID, setBoardID] = useState<string | undefined>(); 
   const [userInfo, setUserInfo] = useState<string | undefined>();
   const [columns, setColumns] = useState<Column[]>([]);
+  // const [unassignedMember, setUnassignedMember] = useState();
   const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
-  // const fetchedColumns = props.props.groups;
-
-  // useEffect(() => {
-  //   // TODO: fetch the initial (at start) board state, keep it in columns
-
-  //   //const fetchedColumns = groupsArrayMock;
-  //   // const fetchedColumns = props.props.groups;
-  //   // console.log("fetchedColumns =",fetchedColumns);
-  //   console.log('columns', column)
-  //   setColumns(column);
-
-  //   // start socket connection
-  //   // socketConnect("hello");
-  // }, [column]);
+  
   useEffect(() =>{
     (async () => {
       const header = await getTokenHeader()
       console.log("header =",header);
 
       //const bdid = "560c9bb3-2e71-48ec-a285-4a539e60602b"
-      const sock = socketIOClient("http://localhost:8081/?boardID="+bid+"&token="+header.headers["Authorization"]);
+      const sock = socketIOClient("http://localhost:8082/?boardID="+bid+"&token="+header.headers["Authorization"]);
       
-      sock.on("transit",(email,groupID) => {
-        console.log("email =",email," groupID =",groupID);
+      sock.on("transit",(email,groupID,index) => {
+        console.log("email =",email," groupID =",groupID, " position =",index);
+        if (email != userInfo){
+          renderDropResult(email,groupID,columns)
+        }
       });
 
       sock.on("join",(email,groupID) => {
@@ -193,20 +180,23 @@ function GroupBoard({bid}:{bid:string | undefined}) {
   useEffect(() => {
     (async () => {
       //TODO: fetch the group info for the given groupId, keep it in groupInfo
-      // const gID:string = '7049fc8d-d67d-45fc-a34b-35e55c0203ff';
       const gid:string = bid!;
       const res = await getBoard(gid);
-      console.log("group board =",res);
       setGroupInfo(res);
-      setColumns(res.groups);
-      setBoardID(res.boardID);
-
+      const noGroup:Column = { 
+        groupID: "unassigned", 
+        members: res.unAssignedMember,
+        name: "No Group"
+      }
+      setColumns([...res.groups,noGroup]);
+      //setColumns(res.groups);
+      
       const user = getProfile();
       console.log("user =",user);
       setUserInfo(user);
     })();
-    console.log("groupboard groupID =", bid);
     console.log("groupInfo =",groupInfo);
+    console.log("columns =",columns);
     // socketReceive(boardID);
   }, [bid]);
   return (
@@ -220,7 +210,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       }}
     >
       <DragDropContext
-        onDragEnd={(result) => socket && onDragEnd(result, columns, setColumns, boardID, socket)}
+        onDragEnd={(result) => socket && onDragEnd(result, columns, setColumns,false, socket)}
       >
         {Object.entries(columns).map(([columnId, column], index) => {
           // console.log("column =",column);
