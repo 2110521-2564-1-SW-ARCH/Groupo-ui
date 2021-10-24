@@ -15,8 +15,8 @@ const BoardList = () => {
 				return {
 					boardID: board.boardID,
 					name: board.name,
-					totalGroup: board.totalGroup,
-					totalMember: board.totalMember,
+					totalGroup: board.totalGroups,
+					totalMember: board.totalMembers,
 					isAssign: board.isAssign,
 				}
 			})

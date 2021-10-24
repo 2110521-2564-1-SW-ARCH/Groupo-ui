@@ -32,11 +32,11 @@ const GroupPage = () => {
       const gid:string = groupId!;
       const res = await getBoard(gid);
   
-      console.log("res =",res);
+      // console.log("res =",res);
       setGroupInfo(res);
     })();
-    console.log("groupID =", groupId);
-    console.log("groupInfo =",groupInfo);
+    // console.log("groupID =", groupId);
+    // console.log("groupInfo =",groupInfo);
   }, [groupId]);
 
   return (
