@@ -21,8 +21,8 @@ const BoardList = () => {
 				}
 			})
 			setBoards(boards)
+			console.log("res =",res);
 		})();
-		console.log("boards =",boards);
 	}, []);
 
 	return (
