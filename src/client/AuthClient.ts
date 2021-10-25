@@ -1,5 +1,5 @@
 import axios from "axios"
-import { userServiceHostPrefix } from "."
+import { getTokenHeader, groupingServiceHostPrefix, userServiceHostPrefix } from "."
 import { LoginRequest, RegisterRequest } from "groupo-shared-service/apiutils/messages"
 
 export const signUp = async (params: RegisterRequest) => {
@@ -21,4 +21,10 @@ export const getProfile = () => {
     const currentToken = JSON.parse(localStorage.getItem("user")!);
     const accessTokenInformation = JSON.parse(atob(currentToken.accessToken.split(".")[1]));
     return accessTokenInformation.email
+}
+
+export const getProfileDeep = async () => {
+    const header = await getTokenHeader()
+    const { data } = await axios.get(userServiceHostPrefix(`/profile`), header)
+    return data.body
 }
