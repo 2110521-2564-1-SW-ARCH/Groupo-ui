@@ -30,5 +30,6 @@ export const getProfileDeep = async () => {
 }
 
 export const updateProfile = async (data: any) => {
-   await axios.patch(userServiceHostPrefix('/profile'), data)
+    const header = await getTokenHeader()
+    await axios.patch(userServiceHostPrefix('/profile'), data, header)
 }
