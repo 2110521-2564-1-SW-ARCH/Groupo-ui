@@ -28,7 +28,7 @@ const BoardList = () => {
 	return (
 		<Container component="main" maxWidth="xs">
 			<Box sx={{ mt: 3 }}>
-				<Typography variant="h5">My groups</Typography>
+				<Typography variant="h5">My boards</Typography>
 				<Box display="flex" flexDirection="column" mt={2} gap={1}>
 					{boards.map((board: BoardItem) => (
 						<BoardListItem board={board} key={board.boardID}/>
