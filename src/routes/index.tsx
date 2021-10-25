@@ -34,7 +34,7 @@ const Routes = () => {
         path="/"
         component={() => <RequireAuth Component={BoardListPage} />}
       />
-      <NavRoute exact path="/group/:id" component={GroupPage} />
+      <NavRoute exact path="/board/:id" component={GroupPage} />
     </Switch>
   );
 };
