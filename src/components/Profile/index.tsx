@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import { getProfileDeep } from "../../client/AuthClient";
+import { getProfileDeep, updateProfile } from "../../client/AuthClient";
 
 const Profile = () => {
   const [isEdit, setIsEdit] = useState(false);
@@ -31,6 +31,10 @@ const Profile = () => {
 
   const handleOnEdit = () => {
     if (isEdit) {
+      updateProfile({
+        firstName: fname,
+        lastName: lname,
+      })
       setIsEdit(false);
     } else {
       setIsEdit(true);

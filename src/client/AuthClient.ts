@@ -28,3 +28,7 @@ export const getProfileDeep = async () => {
     const { data } = await axios.get(userServiceHostPrefix(`/profile`), header)
     return data.body
 }
+
+export const updateProfile = async (data: any) => {
+   await axios.patch(userServiceHostPrefix('/profile'), data)
+}
