@@ -152,6 +152,24 @@ function GroupBoard({bid}:{bid:string | undefined}) {
   const [columns, setColumns] = useState<Column[]>([]);
   // const [unassignedMember, setUnassignedMember] = useState();
   const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
+
+  async function refreshBoard() {
+    //TODO: fetch the group info for the given groupId, keep it in groupInfo
+    const gid:string = bid!;
+    const res = await getBoard(gid);
+    setGroupInfo(res);
+    const noGroup:Column = { 
+      groupID: "unassigned", 
+      members: res.unAssignedMember,
+      name: "No Group"
+    }
+    setColumns([...res.groups,noGroup]);
+    //setColumns(res.groups);
+    
+    const user = getProfile();
+    console.log("user =",user);
+    setUserInfo(user);
+  }
   
   useEffect(() =>{
     (async () => {
@@ -163,9 +181,11 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       
       sock.on("transit",(email,groupID,index) => {
         console.log("email =",email," groupID =",groupID, " position =",index);
-        if (email != userInfo){
+        if (email.toLowerCase() != userInfo?.toLowerCase()){
           renderDropResult(email,groupID,columns)
         }
+
+        refreshBoard();
       });
 
       sock.on("join",(email,groupID) => {
@@ -178,23 +198,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
   },[])
 
   useEffect(() => {
-    (async () => {
-      //TODO: fetch the group info for the given groupId, keep it in groupInfo
-      const gid:string = bid!;
-      const res = await getBoard(gid);
-      setGroupInfo(res);
-      const noGroup:Column = { 
-        groupID: "unassigned", 
-        members: res.unAssignedMember,
-        name: "No Group"
-      }
-      setColumns([...res.groups,noGroup]);
-      //setColumns(res.groups);
-      
-      const user = getProfile();
-      console.log("user =",user);
-      setUserInfo(user);
-    })();
+    refreshBoard();
     console.log("groupInfo =",groupInfo);
     console.log("columns =",columns);
     // socketReceive(boardID);
