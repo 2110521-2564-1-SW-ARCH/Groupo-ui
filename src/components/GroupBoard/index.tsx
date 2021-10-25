@@ -141,7 +141,7 @@ const renderDropResult = (email:string, destGroupID:string, columns:Array<Column
 }
 
 const checkDragDisable = (user:string | undefined, checkEmail:string) => {
-  if (user == checkEmail) {return false;}
+  if (user?.toLowerCase() == checkEmail.toLowerCase()) {return false;}
   else {return true;}
 }
 
