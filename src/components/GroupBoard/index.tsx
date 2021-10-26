@@ -176,7 +176,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       const header = await getTokenHeader()
       console.log("header =",header);
 
-      const sock = socketIOClient(`${process.env.REACT_APP_WEBSOCKET_HOST}?boardID=${bid}&token=${header.headers["Authorization"]}`);
+      const sock = socketIOClient(`${process.env.REACT_APP_WEBSOCKET_HOST}/?boardID=${bid}&token=${header.headers["Authorization"]}`);
       
       sock.on("transit",(email,groupID,index) => {
         console.log("email =",email," groupID =",groupID, " position =",index);
