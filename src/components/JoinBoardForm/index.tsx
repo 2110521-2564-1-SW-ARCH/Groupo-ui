@@ -25,7 +25,7 @@ const JoinBoardForm = () => {
 	const [boardResult, setBoardResult] = useState<BoardResult>();
 	const profile = getProfile();
 	const history = useHistory();
-	// const [selectedChoice, setSelectedChoice] = useState("");
+	// const [selectedChoice, setSelectedChoice] = useState("");//
 
 	const handleOnSearch = async (e: FormEvent) => {
 		e.preventDefault();
@@ -41,6 +41,14 @@ const JoinBoardForm = () => {
 		} catch (error) {
 			console.log(error)
 		}
+	}
+
+	const isMember = () => {
+		return boardResult && (boardResult.groups.some(g => g.members.includes(profile)) || boardResult.unAssignedMember.includes(profile))
+	}
+
+	const totalGroup = () => {
+		return boardResult?.groups.length
 	}
 
 	return (
@@ -97,7 +105,7 @@ const JoinBoardForm = () => {
 							fontSize="10px"
 						>
 							<GroupsIcon />
-							<Typography>{boardResult.totalGroup} groups</Typography>
+							<Typography>{totalGroup()} groups</Typography>
 						</Grid>
 						<Grid
 							item
@@ -108,7 +116,7 @@ const JoinBoardForm = () => {
 							fontSize="10px"
 						>
 							<PermIdentityIcon />
-							<Typography>{boardResult.totalMember} joined</Typography>
+							<Typography>{boardResult.totalMembers} joined</Typography>
 						</Grid>
 					</Grid>
 					{/* <FormControl fullWidth>
@@ -126,7 +134,7 @@ const JoinBoardForm = () => {
 							))}
 						</Select>
 					</FormControl> */}
-					{!boardResult.members.includes(profile) && <Button variant="contained" onClick={handleJoinBoard}>Join</Button>}
+					{!isMember() && <Button variant="contained" onClick={handleJoinBoard}>Join</Button>}
 				</Box>
 			)}
 		</Container>
