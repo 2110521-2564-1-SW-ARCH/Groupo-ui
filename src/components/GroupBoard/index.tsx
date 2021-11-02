@@ -73,10 +73,6 @@ const columnsFromBackend = {
 const onDragEnd = (result: DropResult, columns: any, setColumns: any, socketResponse: boolean, socket:Socket<DefaultEventsMap, DefaultEventsMap>) => {
   if (!result.destination) return;
   const { source, destination } = result;
-  
-  console.log("result =",result);
-  // console.log("column =",columns);
-  // console.log("source =",source," destination =",destination);
 
   if (source.droppableId !== destination.droppableId) {
     const sourceColumn = columns[source.droppableId];
@@ -124,33 +120,15 @@ const socketSend = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, de
   socket.emit("transit", destinationGroup);
 }
 
-const renderDropResult = (email:string, destGroupID:string, columns:Array<Column>) => {
-  const src = columns.map(item => item.groupID).indexOf(destGroupID);
-
-  console.log("source =",src);
-
-  const result ={
-    combine: null,
-    destination: {droppableId: '1', index: 0},
-    draggableId: email,
-    mode: "FLUID",
-    reason: "DROP",
-    source: {index: 1, droppableId: '1'},
-    type: "DEFAULT",
-  }
-}
-
 const checkDragDisable = (user:string | undefined, checkEmail:string) => {
   if (user?.toLowerCase() == checkEmail.toLowerCase()) {return false;}
   else {return true;}
 }
 
 function GroupBoard({bid}:{bid:string | undefined}) {
-  // const [columns, setColumns] = useState(columnsFromBackend);
   const [groupInfo, setGroupInfo] = useState();
   const [userInfo, setUserInfo] = useState<string | undefined>();
   const [columns, setColumns] = useState<Column[]>([]);
-  // const [unassignedMember, setUnassignedMember] = useState();
   const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
 
   async function refreshBoard() {
@@ -164,26 +142,18 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       name: "No Group"
     }
     setColumns([...res.groups,noGroup]);
-    //setColumns(res.groups);
     
     const user = getProfile();
-    console.log("user =",user);
     setUserInfo(user);
   }
   
   useEffect(() =>{
     (async () => {
       const header = await getTokenHeader()
-      console.log("header =",header);
-
       const sock = socketIOClient(`${process.env.REACT_APP_WEBSOCKET_HOST}/?boardID=${bid}&token=${header.headers["Authorization"]}`);
       
       sock.on("transit",(email,groupID,index) => {
         console.log("email =",email," groupID =",groupID, " position =",index);
-        if (email.toLowerCase() != userInfo?.toLowerCase()){
-          renderDropResult(email,groupID,columns)
-        }
-
         refreshBoard();
       });
 
@@ -198,9 +168,6 @@ function GroupBoard({bid}:{bid:string | undefined}) {
 
   useEffect(() => {
     refreshBoard();
-    console.log("groupInfo =",groupInfo);
-    console.log("columns =",columns);
-    // socketReceive(boardID);
   }, [bid]);
   return (
     <div
@@ -216,7 +183,6 @@ function GroupBoard({bid}:{bid:string | undefined}) {
         onDragEnd={(result) => socket && onDragEnd(result, columns, setColumns,false, socket)}
       >
         {Object.entries(columns).map(([columnId, column], index) => {
-          // console.log("column =",column);
           return (
             <div
               style={{
