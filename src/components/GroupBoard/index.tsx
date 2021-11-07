@@ -14,7 +14,7 @@ import { getProfile } from "../../client/AuthClient";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 type Column = 
-  { groupID: string, 
+  { groupID: string|null, 
     members: Array<string>,
     name: string
   }
@@ -82,8 +82,7 @@ const onDragEnd = (result: DropResult, columns: any, setColumns: any, socketResp
 
     //send socket destination 
     if (!socketResponse){
-      console.log("destColumn =",destColumn.groupID);
-      socketSend(socket, destColumn.groupID);
+      socketSend(socket, destColumn.groupID, destination.index);
     }
     
     const [removed] = sourceItems.splice(source.index, 1);
@@ -115,9 +114,9 @@ const onDragEnd = (result: DropResult, columns: any, setColumns: any, socketResp
   }
 };
 
-const socketSend = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, destinationGroup:string) => {
+const socketSend = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, destinationGroup:string, position:number) => {
   console.log("destination group =",destinationGroup)
-  socket.emit("transit", destinationGroup);
+  socket.emit("transit", destinationGroup,position);
 }
 
 const checkDragDisable = (user:string | undefined, checkEmail:string) => {
@@ -137,7 +136,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
     const res = await getBoard(gid);
     setGroupInfo(res);
     const noGroup:Column = { 
-      groupID: "unassigned", 
+      groupID: null, 
       members: res.unAssignedMember,
       name: "No Group"
     }
@@ -150,7 +149,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
   useEffect(() =>{
     (async () => {
       const header = await getTokenHeader()
-      const sock = socketIOClient(`${process.env.REACT_APP_WEBSOCKET_HOST}/?boardID=${bid}&token=${header.headers["Authorization"]}`);
+      const sock = socketIOClient(`${process.env.REACT_APP_WEBSOCKET_HOST}/?boardID=${bid}&token=${header.headers["Authorization"].replace("Bearer ","")}`);
       
       sock.on("transit",(email,groupID,index) => {
         console.log("email =",email," groupID =",groupID, " position =",index);
