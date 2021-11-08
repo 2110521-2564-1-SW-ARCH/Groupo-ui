@@ -3,11 +3,12 @@ import { useParams } from "react-router";
 import GroupBoard from "../../components/GroupBoard";
 import { BoardResult } from "../../models/type/board";
 
-import { getBoards,getBoard } from "../../client/GroupingClient";
+import { getBoards, getBoard } from "../../client/GroupingClient";
 import { BoardItem } from "../../models/type/board";
 import { BoardResponse } from "groupo-shared-service/apiutils/messages";
 
 import "./style.css";
+import Chatbox from "../../components/Chatbox";
 
 const MOCK = {
   boardID: "12",
@@ -29,9 +30,9 @@ const GroupPage = () => {
     (async () => {
       //TODO: fetch the group info for the given groupId, keep it in groupInfo
       // const gID:string = '7049fc8d-d67d-45fc-a34b-35e55c0203ff';
-      const gid:string = groupId!;
+      const gid: string = groupId!;
       const res = await getBoard(gid);
-  
+
       // console.log("res =",res);
       setGroupInfo(res);
     })();
@@ -43,6 +44,20 @@ const GroupPage = () => {
     <div className="board-container">
       <h1>{groupInfo?.name}</h1>
       <GroupBoard bid={groupId!} />
+      <Chatbox
+        messages={[
+          "Sorn: hey",
+          "thong: ha",
+          "Sorn: hey",
+          "thong: ha",
+          "Sorn: hey",
+          "thong: ha",
+          "Sorn: hey",
+          "thong: ha",
+          "Sorn: hey",
+          "thong: ha",
+        ]}
+      />
     </div>
   );
 };
