@@ -44,20 +44,7 @@ const GroupPage = () => {
     <div className="board-container">
       <h1>{groupInfo?.name}</h1>
       <GroupBoard bid={groupId!} />
-      <Chatbox
-        messages={[
-          "Sorn: hey",
-          "thong: ha",
-          "Sorn: hey",
-          "thong: ha",
-          "Sorn: hey",
-          "thong: ha",
-          "Sorn: hey",
-          "thong: ha",
-          "Sorn: hey",
-          "thong: ha",
-        ]}
-      />
+      <Chatbox bid={groupId!} />
     </div>
   );
 };

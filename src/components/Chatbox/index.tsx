@@ -1,15 +1,73 @@
 import { Box, Typography, Grid, TextField } from "@mui/material";
+import socketIOClient, { Socket } from "socket.io-client";
 
 import "./style.css";
+import { getTokenHeader } from "../../client/index";
 import { BoardItem } from "../../models/type/board";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
-const Chatbox = ({ messages }: { messages: string[] }) => {
+const Chatbox = ({ bid }: { bid: string }) => {
   const [message, setMessage] = useState("");
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const [messages, setMessages] = useState([""]);
+  const [socket, setSocket] =
+    useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
+
+  const handleSubmit = () => {
+    sendMessage(message);
     setMessage("");
   };
+
+  const addChatMessage = (email: string, newMessage: string) => {
+    setMessages([...messages, `${email}: ${newMessage}`]);
+  };
+
+  const sendMessage = (newMessage: string) => {
+    if (socket) {
+      socket.emit("chat", newMessage);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      const header = await getTokenHeader();
+      const sock = socketIOClient(
+        `${
+          process.env.REACT_APP_WEBSOCKET_HOST
+        }/?boardID=${bid}&token=${header.headers["Authorization"].replace(
+          "Bearer ",
+          ""
+        )}`
+      );
+
+      sock.on("chat", (email: string, message: string) => {
+        // handle email and message
+
+        setMessages([...messages, `${email}: ${message}`]);
+      });
+
+      setSocket(sock);
+
+      return () => {
+        console.log("websocket unmounting!!!!!");
+        sock.off();
+        sock.disconnect();
+      };
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("chat", (email: string, message: string) => {
+        // handle email and message
+        setMessages([...messages, `${email}: ${message}`]);
+      });
+    }
+    return () => {
+      socket && socket.off("message");
+    };
+  }, [messages, socket]);
+
   return (
     <Box
       width="250px"
@@ -25,21 +83,24 @@ const Chatbox = ({ messages }: { messages: string[] }) => {
       flexDirection="column"
     >
       <Box p="20px" width="200px" height="250px" overflow="scroll">
-        {messages.map((m) => (
-          <Typography>{m}</Typography>
+        {messages.map((m, idx) => (
+          <Typography key={`${idx}`}>{m}</Typography>
         ))}
       </Box>
-      <form onSubmit={handleSubmit}>
-        <Box width="100%">
-          <TextField
-            fullWidth
-            name="message"
-            placeholder="message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-        </Box>
-      </form>
+      <Box width="100%">
+        <TextField
+          fullWidth
+          name="message"
+          placeholder="message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSubmit();
+            }
+          }}
+        />
+      </Box>
     </Box>
   );
 };
