@@ -42,7 +42,7 @@ const GroupPage = () => {
   return (
     <div className="board-container">
       <h1>{groupInfo?.name}</h1>
-      <GroupBoard bid={groupId!} />
+      <GroupBoard bid={groupId!}/>
     </div>
   );
 };
