@@ -11,6 +11,7 @@ type Props = {
 
 const EditGroupModal = ({ isOpen, onEditGroup, onClose }: Props) => {
   const [group, setGroup] = useState("");
+  const [tags, setTags] = useState("");
 
   const handleOnClose = () => {
     setGroup("");
@@ -19,7 +20,7 @@ const EditGroupModal = ({ isOpen, onEditGroup, onClose }: Props) => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onEditGroup(group);
+    onEditGroup(group, tags.split(',').map(x => x.trim()));
     handleOnClose();
   };
 
@@ -33,6 +34,13 @@ const EditGroupModal = ({ isOpen, onEditGroup, onClose }: Props) => {
             placeholder="Edit Group Name"
             value={group}
             onChange={(e) => setGroup(e.target.value)}
+          />
+          <TextField
+            autoFocus
+            name="tags"
+            placeholder="Tags (comma seperated)"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
           />
           <Button type="submit" variant="contained">
             Save change

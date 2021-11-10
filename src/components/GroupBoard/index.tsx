@@ -79,8 +79,8 @@ const socketDeleteGroup = async (socket: Socket<DefaultEventsMap, DefaultEventsM
   socket.emit("group","delete",deleteGroupId);
 }
 
-const socketEditGroup = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, editGroupId:string|null, editContent:string, refreshBoard:any) => {
-  socket.emit("group","update",editGroupId, {name:editContent,description:null});
+const socketEditGroup = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, editGroupId:string|null, editContent:string, tags: string[], refreshBoard:any) => {
+  socket.emit("group","update",editGroupId, {name:editContent,description:null,tags});
 }
 
 const checkDragDisable = (user:string | undefined, checkEmail:string) => {
@@ -181,6 +181,8 @@ function GroupBoard({bid}:{bid:string | undefined}) {
                           <Typography component="h4" variant="h5">
                             {column.name}
                           </Typography>
+
+                          <div>{(column.tags ?? []).join(', ')}</div>
                         </Grid>
                         <Grid item xs={2}>
                           <IconButton
@@ -307,9 +309,9 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       />
       <EditGroupModal
         isOpen={isEditModalOpen}
-        onEditGroup={(editContent: string) => {
+        onEditGroup={(editContent: string, tags: string[]) => {
           socket &&
-            socketEditGroup(socket, groupIdInAction, editContent, refreshBoard);
+            socketEditGroup(socket, groupIdInAction, editContent, tags, refreshBoard);
         }}
         onClose={() => setEditModalOpen(false)}
       />
