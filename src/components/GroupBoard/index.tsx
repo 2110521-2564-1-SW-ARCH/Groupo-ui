@@ -20,6 +20,7 @@ import EditGroupModal from "../EditGroupModal";
 type Column = 
   { groupID: string|null, 
     members: Array<string>,
+    tags: Array<string>,
     name: string
   }
 
