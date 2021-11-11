@@ -104,6 +104,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
   const [userInfo, setUserInfo] = useState<string | undefined>();
   const [columns, setColumns] = useState<Column[]>([]);
   const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
+  const [tags, setTags] = useState<string[]>([]);
 
   async function refreshBoard() {
     //TODO: fetch the group info for the given groupId, keep it in groupInfo
@@ -117,6 +118,16 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       capacity: 0,
     }
     setColumns([...res.groups,noGroup]);
+
+    const allTags = new Set();
+
+    for (let group of res.groups) {
+      for (let tag of group.tags) {
+        allTags.add(tag);
+      }
+    }
+
+    setTags([...allTags] as string[])
     
     const user = getProfile();
     setUserInfo(user);
