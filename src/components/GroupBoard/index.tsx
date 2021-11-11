@@ -21,7 +21,8 @@ type Column =
   { groupID: string|null, 
     members: Array<string>,
     tags: Array<string>,
-    name: string
+    name: string,
+    capacity: number,
   }
 
 const onDragEnd = (result: DropResult, columns: any, setColumns: any, socketResponse: boolean, socket:Socket<DefaultEventsMap, DefaultEventsMap>) => {
@@ -80,8 +81,8 @@ const socketDeleteGroup = async (socket: Socket<DefaultEventsMap, DefaultEventsM
   socket.emit("group","delete",deleteGroupId);
 }
 
-const socketEditGroup = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, editGroupId:string|null, editContent:string, tags: string[], refreshBoard:any) => {
-  socket.emit("group","update",editGroupId, {name:editContent,description:null,tags});
+const socketEditGroup = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, editGroupId:string|null, editContent:string, tags: string[], capacity: number, refreshBoard:any) => {
+  socket.emit("group","update",editGroupId, {name:editContent,description:null,tags,capacity});
 }
 
 const checkDragDisable = (user:string | undefined, checkEmail:string) => {
@@ -111,7 +112,9 @@ function GroupBoard({bid}:{bid:string | undefined}) {
     const noGroup:Column = { 
       groupID: null, 
       members: res.unAssignedMember,
-      name: "No Group"
+      tags: [],
+      name: "No Group",
+      capacity: 0,
     }
     setColumns([...res.groups,noGroup]);
     
@@ -125,6 +128,14 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       const header = await getTokenHeader()
       const sock = socketIOClient(`${process.env.REACT_APP_WEBSOCKET_HOST}/?boardID=${bid}&token=${header.headers["Authorization"].replace("Bearer ","")}`);
       
+      sock.on("autogroup",() => {
+        refreshBoard();
+      });
+
+      sock.on("membertag",() => {
+        refreshBoard();
+      });
+
       sock.on("transit",(email,groupID,index) => {
         console.log("email =",email," groupID =",groupID, " position =",index);
         refreshBoard();
@@ -310,9 +321,9 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       />
       <EditGroupModal
         isOpen={isEditModalOpen}
-        onEditGroup={(editContent: string, tags: string[]) => {
+        onEditGroup={(editContent: string, tags: string[], capacity: number) => {
           socket &&
-            socketEditGroup(socket, groupIdInAction, editContent, tags, refreshBoard);
+            socketEditGroup(socket, groupIdInAction, editContent, tags, capacity, refreshBoard);
         }}
         onClose={() => setEditModalOpen(false)}
       />
