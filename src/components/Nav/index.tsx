@@ -91,7 +91,7 @@ const Nav = () => {
         Create
       </MenuItem>
       <MenuItem component={Link} to="/" color="inherit">
-        My groups
+        My boards
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
@@ -129,7 +129,7 @@ const Nav = () => {
               Create
             </Button>
             <Button component={Link} to="/" color="inherit">
-              My groups
+              My boards
             </Button>
             <IconButton
               size="large"

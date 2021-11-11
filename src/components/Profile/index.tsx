@@ -7,15 +7,34 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getProfileDeep, updateProfile } from "../../client/AuthClient";
 
 const Profile = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [fname, setFname] = useState("Sornram");
   const [lname, setLname] = useState("Saetang");
+  const [email, setEmail] = useState("chomtana001@gmail.com");
+
+  async function refreshData() {
+    const profile = await getProfileDeep();
+    console.log(profile);
+
+    setFname(profile.firstName)
+    setLname(profile.lastName)
+    setEmail(profile.email)
+  }
+
+  useEffect(() => {
+    refreshData();
+  }, [])
 
   const handleOnEdit = () => {
     if (isEdit) {
+      updateProfile({
+        firstName: fname,
+        lastName: lname,
+      })
       setIsEdit(false);
     } else {
       setIsEdit(true);
@@ -86,7 +105,7 @@ const Profile = () => {
             )}
             <Grid item xs={12} sm={6}>
               <Typography component="h3" variant="h5">
-                hardcoded@email
+                {email}
               </Typography>
             </Grid>
           </Grid>

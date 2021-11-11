@@ -19,7 +19,7 @@ const BoardListItem = ({board}: {board: BoardItem}) => {
         flexDirection="column"
         gap={0.5}
       >
-        <Link to="/" className="title">
+        <Link to={"/board/" + board.boardID} className="title">
           <Typography variant="h5">{board.name}</Typography>
         </Link>
         <Grid container spacing={1}>
