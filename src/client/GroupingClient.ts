@@ -19,7 +19,7 @@ export const joinBoard = async (boardID: string) => {
     await axios.post(groupingServiceHostPrefix(`/board/${boardID}/join`), {}, header)
 }
 
-export const createBoard = async (params: CreateBoardRequest) => {
+export const createBoard = async (params: any) => {
     const header = await getTokenHeader()
     await axios.post(groupingServiceHostPrefix('/board'), params, header)
     // console.log(data.body.boardID)
