@@ -4,7 +4,7 @@ import { getTokenHeader, groupingServiceHostPrefix } from "."
 
 export const getBoards = async () => {
     const header = await getTokenHeader()
-    const { data } = await axios.get(groupingServiceHostPrefix('/board'), header)
+    const { data } = await axios.get(groupingServiceHostPrefix('/board/'), header)
     return data.body
 }
 
@@ -21,7 +21,7 @@ export const joinBoard = async (boardID: string) => {
 
 export const createBoard = async (params: any) => {
     const header = await getTokenHeader()
-    await axios.post(groupingServiceHostPrefix('/board'), params, header)
+    await axios.post(groupingServiceHostPrefix('/board/'), params, header)
     // console.log(data.body.boardID)
 }
 
