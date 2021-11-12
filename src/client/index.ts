@@ -6,7 +6,7 @@ export const getTokenHeader = async () => {
     const accessTokenInformation = JSON.parse(atob(currentToken.accessToken.split(".")[1]));
     if (accessTokenInformation.exp * 1000 < Date.now()) {
         const params: RefreshRequest = { refreshToken: currentToken.refreshToken }
-        const { data } = await axios.post(userServiceHostPrefix('/user/refresh'), params)
+        const { data } = await axios.post(userServiceHostPrefix('/user/refresh/'), params)
         localStorage.setItem("user", JSON.stringify(data.body));
     }
     const token = JSON.parse(localStorage.getItem("user")!).accessToken

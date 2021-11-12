@@ -8,7 +8,7 @@ export const signUp = async (params: RegisterRequest) => {
 }
 
 export const login = async (params: LoginRequest) => {
-    const { data } = await axios.post(userServiceHostPrefix('/auth/login'), params)
+    const { data } = await axios.post(userServiceHostPrefix('/auth/login/'), params)
     localStorage.setItem("user", JSON.stringify(data.body));
 }
 
@@ -25,11 +25,11 @@ export const getProfile = () => {
 
 export const getProfileDeep = async () => {
     const header = await getTokenHeader()
-    const { data } = await axios.get(userServiceHostPrefix(`/profile`), header)
+    const { data } = await axios.get(userServiceHostPrefix(`/profile/`), header)
     return data.body
 }
 
 export const updateProfile = async (data: any) => {
     const header = await getTokenHeader()
-    await axios.patch(userServiceHostPrefix('/profile'), data, header)
+    await axios.patch(userServiceHostPrefix('/profile/'), data, header)
 }
