@@ -12,7 +12,7 @@ type Props = {
 const EditGroupModal = ({ isOpen, onEditGroup, onClose }: Props) => {
   const [group, setGroup] = useState("");
   const [tags, setTags] = useState("");
-  const [capacity, setCapacity] = useState(0);
+  const [capacity, setCapacity] = useState("0");
 
   const handleOnClose = () => {
     setGroup("");
@@ -21,14 +21,14 @@ const EditGroupModal = ({ isOpen, onEditGroup, onClose }: Props) => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onEditGroup(group, tags.split(',').map(x => x.trim()), capacity);
+    onEditGroup(group, tags.split(',').map(x => x.trim()), parseInt(capacity));
     handleOnClose();
   };
 
   return (
     <Dialog open={isOpen} onClose={handleOnClose}>
       <form onSubmit={handleSubmit}>
-        <Box m={2} display="flex" gap={1}>
+        <Box m={2} display="flex" flexDirection="column" gap={1}>
           <TextField
             autoFocus
             name="group"
@@ -47,8 +47,8 @@ const EditGroupModal = ({ isOpen, onEditGroup, onClose }: Props) => {
             autoFocus
             name="tags"
             placeholder="Auto Group Capacity (0 for unlimited)"
-            value={tags}
-            onChange={(e) => setCapacity(parseInt(e.target.value))}
+            value={capacity}
+            onChange={(e) => setCapacity(e.target.value)}
           />
           <Button type="submit" variant="contained">
             Save change
