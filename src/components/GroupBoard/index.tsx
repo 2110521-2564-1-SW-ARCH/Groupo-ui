@@ -9,7 +9,7 @@ import socketIOClient, { Socket } from "socket.io-client";
 import socket from "socket.io";
 import { getTokenHeader, groupingServiceHostPrefix } from "../../client/index"
 import { BoardResult } from "../../models/type/board";
-import { getBoards,getBoard } from "../../client/GroupingClient";
+import { getBoards,getBoard, getMemberTags, updateMemberTags } from "../../client/GroupingClient";
 import { getProfile } from "../../client/AuthClient";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
@@ -105,6 +105,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
   const [columns, setColumns] = useState<Column[]>([]);
   const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
   const [tags, setTags] = useState<string[]>([]);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
 
   async function refreshBoard() {
     //TODO: fetch the group info for the given groupId, keep it in groupInfo
@@ -128,6 +129,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
     }
 
     setTags([...allTags] as string[])
+    setActiveTags(await getMemberTags(gid))
     
     const user = getProfile();
     setUserInfo(user);
@@ -170,6 +172,21 @@ function GroupBoard({bid}:{bid:string | undefined}) {
   useEffect(() => {
     refreshBoard();
   }, [bid]);
+
+  function toggleActiveTag(tag: string) {
+    let tagIndex = activeTags.indexOf(tag)
+    let newActiveTags = [...activeTags];
+
+    if (tagIndex == -1) {
+      newActiveTags.push(tag);
+    } else {
+      newActiveTags.splice(tagIndex, 1);
+    }
+
+    updateMemberTags(bid!, newActiveTags);
+    setActiveTags(newActiveTags);
+  }
+
   return (
     <Fragment>
       <div
@@ -311,17 +328,71 @@ function GroupBoard({bid}:{bid:string | undefined}) {
           })}
         </DragDropContext>
       </div>
-      <div>
-        <Button
-          fullWidth
-          startIcon={<AddIcon />}
-          variant="text"
-          disabled={isNotBoardOwner(boardOwner,userInfo)}
-          sx={{ mt: 1, mb: 1 }}
-          onClick={() => setAddModalOpen(true)}
+
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+      }}>
+        <div
+          style={{
+            marginTop: 24,
+            marginBottom: 12,
+            fontWeight: "bold",
+          }}
         >
-          Add group
-        </Button>
+          Your favorite tags for auto grouping
+        </div>
+
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          marginRight: 36,
+          width: "calc(100% - 300px)",
+        }}>
+          {tags.map(tag => (
+            <div 
+              style={{
+                padding: 12,
+                paddingLeft: 24,
+                paddingRight: 24,
+                marginRight: 12,
+                marginBottom: 12,
+                borderRadius: 48,
+                backgroundColor: '#1a76d2',
+                opacity: activeTags.indexOf(tag) == -1 ? 0.6 : 1,
+                color: 'white',
+              }}
+              key={tag}
+              onClick={() => toggleActiveTag(tag)}
+            >
+              {tag}
+            </div>
+          ))}
+        </div>
+
+        {!isNotBoardOwner(boardOwner,userInfo) &&
+          <div style={{
+            display: "flex"
+          }}>
+            <Button
+              startIcon={<AddIcon />}
+              variant="text"
+              sx={{ mt: 1, mb: 1 }}
+              onClick={() => setAddModalOpen(true)}
+            >
+              Add group
+            </Button>
+
+            <Button
+              startIcon={<AddIcon />}
+              variant="text"
+              sx={{ mt: 1, mb: 1 }}
+              onClick={() => setAddModalOpen(true)}
+            >
+              Auto group
+            </Button>
+          </div>
+        }
       </div>
       <AddGroupModal
         isOpen={isAddModalOpen}
