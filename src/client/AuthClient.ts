@@ -8,7 +8,7 @@ export const signUp = async (params: RegisterRequest) => {
 }
 
 export const login = async (params: LoginRequest) => {
-    const { data } = await axios.post(userServiceHostPrefix('/auth/login'), params)
+    const { data } = await axios.post(userServiceHostPrefix('/auth/login/'), params)
     localStorage.setItem("user", JSON.stringify(data.body));
 }
 
