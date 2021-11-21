@@ -1,9 +1,9 @@
 import axios from "axios"
-import { getTokenHeader, groupingServiceHostPrefix, userServiceHostPrefix } from "."
+import { getTokenHeader, userServiceHostPrefix } from "."
 import { LoginRequest, RegisterRequest } from "groupo-shared-service/apiutils/messages"
 
 export const signUp = async (params: RegisterRequest) => {
-    await axios.post(userServiceHostPrefix('/profile'), params);
+    await axios.post(userServiceHostPrefix('/profile/'), params);
     await login({ email: params.email, password: params.password });
 }
 
