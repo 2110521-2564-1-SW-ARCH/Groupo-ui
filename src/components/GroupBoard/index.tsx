@@ -12,7 +12,7 @@ import { BoardResult } from "../../models/type/board";
 import { getBoards,getBoard, getMemberTags, updateMemberTags } from "../../client/GroupingClient";
 import { getProfile } from "../../client/AuthClient";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
+import { Add as AddIcon, AdjustOutlined, Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import { Button, IconButton, Box,Grid,Typography,Dialog } from "@mui/material";
 import AddGroupModal from "../AddGroupModal";
 import EditGroupModal from "../EditGroupModal";
@@ -130,6 +130,8 @@ function GroupBoard({bid}:{bid:string | undefined}) {
 
     setTags([...allTags] as string[])
     setActiveTags(await getMemberTags(gid))
+
+    console.log(res)
     
     const user = getProfile();
     setUserInfo(user);
@@ -185,6 +187,10 @@ function GroupBoard({bid}:{bid:string | undefined}) {
 
     updateMemberTags(bid!, newActiveTags);
     setActiveTags(newActiveTags);
+  }
+
+  function autogroup() {
+    socket?.emit("autogroup", bid!);
   }
 
   return (
@@ -384,10 +390,10 @@ function GroupBoard({bid}:{bid:string | undefined}) {
             </Button>
 
             <Button
-              startIcon={<AddIcon />}
+              startIcon={<AdjustOutlined />}
               variant="text"
               sx={{ mt: 1, mb: 1 }}
-              onClick={() => setAddModalOpen(true)}
+              onClick={() => autogroup()}
             >
               Auto group
             </Button>
