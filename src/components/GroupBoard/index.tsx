@@ -120,16 +120,20 @@ function GroupBoard({bid}:{bid:string | undefined}) {
     }
     setColumns([...res.groups,noGroup]);
 
-    const allTags = new Set();
+    // const allTags = new Set();
 
-    for (let group of res.groups) {
-      for (let tag of group.tags) {
-        allTags.add(tag);
-      }
-    }
+    // for (let group of res.groups) {
+    //   for (let tag of group.tags) {
+    //     allTags.add(tag);
+    //   }
+    // }
 
-    setTags([...allTags] as string[])
-    setActiveTags(await getMemberTags(gid))
+    const allTags: string[] = res.tags.map((x: any) => x.name);
+
+    setTags(allTags)
+    let memberTags = await getMemberTags(gid);
+    let memberTagsFiltered = memberTags.filter(x => allTags.indexOf(x) != -1);
+    setActiveTags(memberTagsFiltered)
 
     console.log(res)
     
