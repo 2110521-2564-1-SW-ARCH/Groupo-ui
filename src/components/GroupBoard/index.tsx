@@ -119,6 +119,12 @@ function GroupBoard({bid}:{bid:string | undefined}) {
       capacity: 0,
     }
     setColumns([...res.groups,noGroup]);
+    console.log(res)
+    
+    const user = getProfile();
+    setUserInfo(user);
+    setBoardOwner(res.owner);
+
 
     // const allTags = new Set();
 
@@ -134,12 +140,6 @@ function GroupBoard({bid}:{bid:string | undefined}) {
     let memberTags = await getMemberTags(gid);
     let memberTagsFiltered = memberTags.filter(x => allTags.indexOf(x) != -1);
     setActiveTags(memberTagsFiltered)
-
-    console.log(res)
-    
-    const user = getProfile();
-    setUserInfo(user);
-    setBoardOwner(res.owner);
   }
   
   useEffect(() =>{

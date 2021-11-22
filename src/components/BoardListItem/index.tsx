@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import "./style.css";
 import { BoardItem } from "../../models/type/board";
 
-const BoardListItem = ({board}: {board: BoardItem}) => {
+const BoardListItem = ({board}: {board: BoardItem, user: string|undefined}) => {
   return (
     <Box p={1} borderRadius={2} border="1px solid #00000020">
       <Box
@@ -23,13 +23,16 @@ const BoardListItem = ({board}: {board: BoardItem}) => {
           <Typography variant="h5">{board.name}</Typography>
         </Link>
         <Grid container spacing={1}>
-          <Grid item xs={4} display="flex" gap={1} color="gray" fontSize="10px">
+          <Grid item xs={5} display="flex" gap={1} color="gray" fontSize="10px">
             <GroupsIcon />
             <Typography>{board.totalGroup} groups</Typography>
           </Grid>
-          <Grid item xs={4} display="flex" gap={1} color="gray" fontSize="10px">
+          <Grid item xs={5} display="flex" gap={1} color="gray" fontSize="10px">
             <PermIdentityIcon />
             <Typography>{board.totalMember} joined</Typography>
+          </Grid>
+          <Grid item xs={2} display="flex" gap={1} color="gray" fontSize="10px">
+            <PermIdentityIcon />
           </Grid>
         </Grid>
       </Box>
