@@ -20,6 +20,7 @@ const BoardList = () => {
 					totalGroup: board.totalGroups,
 					totalMember: board.totalMembers,
 					isAssign: board.isAssign,
+					owner: board.owner
 				}
 			})
 			setBoards(boards)

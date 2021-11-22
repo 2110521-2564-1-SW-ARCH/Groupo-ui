@@ -36,10 +36,7 @@ export const createBoard = async (params: any) => {
     // console.log(data.body.boardID)
 }
 
-export const updateBoard = () => {
-
-}
-
-export const deleteBoard = () => {
-
-}
+// export const deleteBoard = async (boardID: string) => {
+//     const header = await getTokenHeader()
+//     await axios.put(groupingServiceHostPrefix(`/board/delete/${boardID}/`), header)
+// }

@@ -9,4 +9,5 @@ export type BoardItem = {
 	totalGroup: number;
 	totalMember: number;
 	isAssign: boolean;
+	owner: string;
 }
