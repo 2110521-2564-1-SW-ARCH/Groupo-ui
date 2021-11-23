@@ -13,18 +13,26 @@ import { getBoards,getBoard, getMemberTags, updateMemberTags } from "../../clien
 import { getProfile } from "../../client/AuthClient";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { Add as AddIcon, AdjustOutlined, Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
-import { Button, IconButton, Box,Grid,Typography,Dialog } from "@mui/material";
+import { Button, IconButton, Box,Grid,Typography,Dialog, Tooltip } from "@mui/material";
 import AddGroupModal from "../AddGroupModal";
 import EditGroupModal from "../EditGroupModal";
 import { useHistory } from "react-router-dom";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 type Column = 
   { groupID: string|null, 
     members: Array<string>,
+    membersObj: Array<memberObject>,
     tags: Array<string>,
     name: string,
     capacity: number,
+  }
+
+type memberObject = 
+  {
+    email: string,
+    tags: Array<string>
   }
 
 const onDragEnd = (result: DropResult, columns: any, setColumns: any, socketResponse: boolean, socket:Socket<DefaultEventsMap, DefaultEventsMap>) => {
@@ -34,8 +42,8 @@ const onDragEnd = (result: DropResult, columns: any, setColumns: any, socketResp
   if (source.droppableId !== destination.droppableId) {
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
-    const sourceItems = [...sourceColumn.members];
-    const destItems = [...destColumn.members];
+    const sourceItems = [...sourceColumn.membersObj];
+    const destItems = [...destColumn.membersObj];
 
     //send socket destination 
     if (!socketResponse){
@@ -48,28 +56,37 @@ const onDragEnd = (result: DropResult, columns: any, setColumns: any, socketResp
       ...columns,
       [source.droppableId]: {
         ...sourceColumn,
-        members: sourceItems,
+        membersObj: sourceItems,
       },
       [destination.droppableId]: {
         ...destColumn,
-        members: destItems,
+        membersObj: destItems,
       },
     });
     // TODO: send an event to the server regarding the change in group
   } else {
     const column = columns[source.droppableId];
-    const copiedItems = [...column.members];
+    const copiedItems = [...column.membersObj];
     const [removed] = copiedItems.splice(source.index, 1);
     copiedItems.splice(destination.index, 0, removed);
     setColumns({
       ...columns,
       [source.droppableId]: {
         ...column,
-        members: copiedItems,
+        membersObj: copiedItems,
       },
     });
   }
 };
+
+const renderTooltip = (tags:Array<string>) => {
+  let tooltip = "";
+  tags.forEach((tag) => {
+    tooltip = tooltip+tag+", ";
+  })
+  if (tooltip=="") {tooltip = "No tag"}
+  return tooltip;
+}
 
 const socketSend = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, destinationGroup:string|null, position:number) => {
   socket.emit("transit", destinationGroup,position);
@@ -88,15 +105,12 @@ const socketEditGroup = async (socket: Socket<DefaultEventsMap, DefaultEventsMap
 }
 
 const socketDeleteBoard = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, deleteBoardId:string, goToBoardList:any) => {
-  console.log("delete board id =",deleteBoardId)
   socket.emit("board","delete",deleteBoardId);
-  goToBoardList();
 }
 
 const socketLeaveBoard = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, leaveBoardId:string, goToBoardList:any) => {
-  console.log("leave board id =",leaveBoardId)
   socket.emit("board","leave",leaveBoardId);
-  goToBoardList();
+  // goToBoardList();
 }
 
 const checkDragDisable = (user:string | undefined, checkEmail:string) => {
@@ -113,6 +127,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
   const [boardOwner, setBoardOwner] = useState<string | undefined>()
   const [isAddModalOpen, setAddModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [groupNameInAction,setGroupNameInAction] = useState<string | null>("");
   const [groupIdInAction, setGroupIdInAction] = useState<string | null>("")
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDeleteBoardModalOpen, setDeleteBoardModalOpen] = useState(false);
@@ -136,6 +151,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
     const noGroup:Column = { 
       groupID: null, 
       members: res.unAssignedMember,
+      membersObj: res.unAssignedMemberObj,
       tags: [],
       name: "No Group",
       capacity: 0,
@@ -146,7 +162,6 @@ function GroupBoard({bid}:{bid:string | undefined}) {
     const user = getProfile();
     setUserInfo(user);
     setBoardOwner(res.owner);
-
 
     // const allTags = new Set();
 
@@ -194,7 +209,13 @@ function GroupBoard({bid}:{bid:string | undefined}) {
 
       sock.on("board",(action, boardID,email) => {
         console.log("action =",action,"boardID =",boardID,"email =",email);
-        refreshBoard();
+        if (action == "deleteBoard"){
+          goToBoardList()
+          // alert("The board has been deleted")
+        }
+        else {
+          if (email == userInfo) {goToBoardList()}
+        }
       })
 
       setSocket(sock);
@@ -218,6 +239,9 @@ function GroupBoard({bid}:{bid:string | undefined}) {
 
     updateMemberTags(bid!, newActiveTags);
     setActiveTags(newActiveTags);
+    setTimeout(() => {
+      refreshBoard();
+    },300)
   }
 
   function autogroup() {
@@ -294,6 +318,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
                             disabled={isNotBoardOwner(boardOwner, userInfo)}
                             onClick={() => {
                               setGroupIdInAction(column.groupID);
+                              setGroupNameInAction(column.name);
                               setEditModalOpen(true);
                             }}
                           >
@@ -343,15 +368,15 @@ function GroupBoard({bid}:{bid:string | undefined}) {
                               minHeight: 500,
                             }}
                           >
-                            {column.members.map((item, index) => {
+                            {column.membersObj.map((item, index) => {
                               return (
                                 <Draggable
-                                  key={item}
-                                  draggableId={`${item}`}
+                                  key={item.email}
+                                  draggableId={`${item.email}`}
                                   index={index}
                                   isDragDisabled={
                                     // TODO: check if we have right to change group for this person
-                                    checkDragDisable(userInfo, item)
+                                    checkDragDisable(userInfo, item.email)
                                   }
                                 >
                                   {(provided, snapshot) => {
@@ -372,7 +397,12 @@ function GroupBoard({bid}:{bid:string | undefined}) {
                                           ...provided.draggableProps.style,
                                         }}
                                       >
-                                        {item}
+                                        {item.email}
+                                        <Tooltip title={renderTooltip(item.tags)}>
+                                          <IconButton color="inherit">
+                                            <LocalOfferIcon />
+                                          </IconButton>
+                                        </Tooltip>
                                       </div>
                                     );
                                   }}
@@ -475,7 +505,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
         onEditGroup={(
           editContent: string,
           tags: string[],
-          capacity: number
+          capacity: number,
         ) => {
           socket &&
             socketEditGroup(
@@ -488,6 +518,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
             );
         }}
         onClose={() => setEditModalOpen(false)}
+        preName={groupNameInAction}
       />
       <Dialog
         open={isDeleteModalOpen}

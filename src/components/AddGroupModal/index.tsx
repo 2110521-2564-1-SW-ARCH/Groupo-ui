@@ -9,7 +9,7 @@ type Props = {
 };
 
 const AddGroupModal = ({ isOpen, onAddGroup, onClose }: Props) => {
-  const [group, setGroup] = useState("");
+  const [group, setGroup] = useState("group name");
 
   const handleOnClose = () => {
     setGroup("");

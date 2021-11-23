@@ -1,21 +1,21 @@
 import { Button, Dialog, Modal, TextField } from "@mui/material";
 import { Box } from "@mui/system";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 
 type Props = {
   onEditGroup: Function;
   onClose: () => void;
   isOpen: boolean;
-  // preData: string;
+  preName: string | null;
 };
 
-const EditGroupModal = ({ isOpen, onEditGroup, onClose }: Props) => {
-  const [group, setGroup] = useState("");
+const EditGroupModal = ({ isOpen, onEditGroup, onClose, preName }: Props) => {
+  const [group, setGroup] = useState(preName);
   const [tags, setTags] = useState("");
   const [capacity, setCapacity] = useState("0");
 
   const handleOnClose = () => {
-    setGroup("");
+    setGroup(preName);
     onClose();
   };
 
@@ -24,6 +24,10 @@ const EditGroupModal = ({ isOpen, onEditGroup, onClose }: Props) => {
     onEditGroup(group, tags.split(',').map(x => x.trim()), parseInt(capacity));
     handleOnClose();
   };
+
+  useEffect(() =>{
+    setGroup(preName);
+  },[isOpen])
 
   return (
     <Dialog open={isOpen} onClose={handleOnClose}>
