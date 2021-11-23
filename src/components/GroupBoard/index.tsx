@@ -85,6 +85,8 @@ const renderTooltip = (tags:Array<string>) => {
     tooltip = tooltip+tag+", ";
   })
   if (tooltip=="") {tooltip = "No tag"}
+  else {tooltip = tooltip.substr(0, tooltip.length - 2)}
+  
   return tooltip;
 }
 
@@ -110,7 +112,9 @@ const socketDeleteBoard = async (socket: Socket<DefaultEventsMap, DefaultEventsM
 
 const socketLeaveBoard = async (socket: Socket<DefaultEventsMap, DefaultEventsMap>, leaveBoardId:string, goToBoardList:any) => {
   socket.emit("board","leave",leaveBoardId);
-  // goToBoardList();
+  setTimeout(() => {
+    goToBoardList()
+  },500)
 }
 
 const checkDragDisable = (user:string | undefined, checkEmail:string) => {
@@ -214,7 +218,7 @@ function GroupBoard({bid}:{bid:string | undefined}) {
           // alert("The board has been deleted")
         }
         else {
-          if (email == userInfo) {goToBoardList()}
+          refreshBoard()
         }
       })
 
