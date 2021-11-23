@@ -17,7 +17,7 @@ export const getBoard = async (boardID: string) => {
 export const getMemberTags = async (boardID: string): Promise<string[]> => {
     const header = await getTokenHeader()
     const { data } = await axios.get(groupingServiceHostPrefix(`/board/${boardID}/member/tags`), header)
-    return data.body
+    return data.body || []
 }
 
 export const updateMemberTags = async (boardID: string, tags: string[]) => {
@@ -36,10 +36,7 @@ export const createBoard = async (params: any) => {
     // console.log(data.body.boardID)
 }
 
-export const updateBoard = () => {
-
-}
-
-export const deleteBoard = () => {
-
-}
+// export const deleteBoard = async (boardID: string) => {
+//     const header = await getTokenHeader()
+//     await axios.put(groupingServiceHostPrefix(`/board/delete/${boardID}/`), header)
+// }
