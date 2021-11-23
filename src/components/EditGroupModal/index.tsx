@@ -40,13 +40,13 @@ const EditGroupModal = ({ isOpen, onEditGroup, onClose, preName }: Props) => {
             value={group}
             onChange={(e) => setGroup(e.target.value)}
           />
-          <TextField
+          {/* <TextField
             autoFocus
             name="tags"
             placeholder="Tags (comma seperated)"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
-          />
+          /> */}
           <TextField
             autoFocus
             name="tags"
